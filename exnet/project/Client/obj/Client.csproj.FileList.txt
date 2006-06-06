@@ -1,0 +1,7 @@
+bin\Debug\Client.dll
+bin\Debug\Client.pdb
+obj\Debug\ResolveAssemblyReference.cache
+obj\Debug\Client.dll
+obj\Debug\Client.pdb
+bin\Debug\Interfaces.dll
+bin\Debug\Interfaces.pdb

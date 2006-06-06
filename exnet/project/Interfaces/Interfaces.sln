@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.1311
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces", "Interfaces.csproj", "{6D7A396D-DA7D-4814-ABA6-263280E2F447}"
+EndProject
+Global
+EndGlobal

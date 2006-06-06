@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<DataBases>
+	<DataBase name="lokal">
+		<Table name="user">
+			<Row name="id" type="integer" primary="true"></Row>
+			<Row name="user" type="string"></Row>
+			<Row name="pass" type="string"></Row>
+			<Entity>		
+				<Row name="user">admin</Row>	
+				<Row name="pass">admin</Row>	
+			</Entity>
+		</Table>		
+		<Table name="messages">
+			<Row name="id" type="integer" primary="true"></Row>
+			<Row name="date" type="string"></Row>
+			<Row name="title" type="string"></Row>
+			<Row name="content" type="string"></Row>
+			<Row name="sender" type="integer"></Row>
+			<Row name="receiver" type="integer"></Row>
+			<Row name="answer" type="integer"></Row>
+		</Table>	
+		<Table name="documents">
+			<Row name="id" type="integer" primary="true"></Row>
+			<Row name="text" type="string"></Row>
+		</Table>
+	</DataBase>
+</DataBases>

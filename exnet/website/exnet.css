@@ -1,0 +1,69 @@
+body
+{
+	background-color:#dbdbdb;
+	background-image:url('img/upper_background.jpg');
+	background-repeat:repeat-x;
+	border:0;
+	Overflow-x: hidden;
+	Overflow-y: auto;  
+	margin:0;	
+}
+
+td
+{
+	font: 11px arial, helvetica, sans-serif;
+	color:#486475;
+}
+
+.title
+{
+	font: bold 11px arial, helvetica, sans-serif;
+	color:#336699;
+}
+
+.normal
+{
+	font: 11px arial, helvetica, sans-serif;
+	color: #444444; 
+	font-size: 11px; 
+}
+
+.main
+{
+	height:100%;
+	width:650px;
+	background-color:white;
+}
+
+a
+{
+	text-decoration:none;
+	color:#486475;
+}
+
+a.big
+{
+	font: bold 11px arial, helvetica, sans-serif;
+}
+
+a:hover
+{
+	color:#dc8827;
+}
+
+a.small
+{
+	font: 11px arial, helvetica, sans-serif;
+}
+
+p.title
+{
+	font: bold 16px arial, helvetica, sans-serif;
+	color:black;
+}
+
+p.text
+{
+	font: 12px arial, helvetica, sans-serif;
+	color:black;
+}

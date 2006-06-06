@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.1291
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Resources", "Resources.csproj", "{21AF2257-46FD-48CF-8CA3-2022FC6B04C1}"
+EndProject
+Global
+EndGlobal
