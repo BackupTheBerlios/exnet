@@ -13,20 +13,19 @@ namespace Gui
 	{
 		
 		#region variables
-		private delegate void BackCall ();
+		private delegate void BackCall (User user);
 		private BackCall bc = null;
 		private ClientSettings _cs = ClientSettings.Fetch();		
 		private Client.Client _c = new Client.Client();
 		private Resources.Function _r = new Resources.Function();
-		private Gui.NewForm mf;				
-		private IUser _user;
+		private Gui.NewForm mf;	
 		private bool CloseVar = true;
 		#endregion
 		
 		public Login()
 		{
 			InitializeComponent();
-			bc += this.Check;
+			bc += Check;
 			_c.UserLogin += ServerCall;			
 			
 			#region setSettings
@@ -34,31 +33,31 @@ namespace Gui
 			this.textBox2.Text = _cs.LoginSettings.Pass;
 			this.checkBox1.Checked = _cs.LoginSettings.AutoLogin;
 			#endregion
-			
+						
 			if(_cs.LoginSettings.AutoLogin)
 				Button1Click(null,null);
 		}
 
-		public void ServerCall(IUser user)
+		public void ServerCall(User user)
 		{
-			_user = user;
+			//_user = user;
 			
 			if(this.InvokeRequired)
 			{
-				Invoke(bc,new object [] {});
+				Invoke(bc,new object [] {user});
 			}
 		}
 		
-		private void Check()
+		private void Check(User user)
 		{
 			this.testing1.Stop();
 			this.button1.Enabled = true;
-			if(_user.Error == ErrorStatus.None)
+			if(user.Error == ErrorStatus.None)
 			{			
 				this.toolStripStatusLabel1.Text = ErrorStatus.None.ToString();
 								
 				this.Hide();
-				mf = new NewForm(_c,_user,_cs);
+				mf = new NewForm(_c,user,_cs);
 				mf.Show();
 				
 				this.mf.Closed += delegate(object senderd, EventArgs ed) { 
@@ -73,8 +72,8 @@ namespace Gui
 				
 				this.mf.logi += ChangeClose;
 						
-			}else if(_user.Error == ErrorStatus.PassWrong){
-				foreach(ErrorStatus es in _user.GetErrors())
+			}else if(user.Error == ErrorStatus.PassWrong){
+				foreach(ErrorStatus es in user.GetErrors())
 				{
 				this.toolStripStatusLabel1.Text = es.ToString();
 				}	
@@ -87,7 +86,7 @@ namespace Gui
 			user.Name = this.textBox1.Text;
 			user.Pass = this.textBox2.Text;
 			_c.Login(user);		
-			this.testing1.Start();
+			//this.testing1.Start();
 			this.button1.Enabled = false;
 			
 			#region saveLogin
@@ -98,13 +97,11 @@ namespace Gui
 			#endregion			
 		}
 				
-		private void ChangeClose(bool cl)
-		{
+		private void ChangeClose(bool cl){
 			this.CloseVar = cl;
 		}
-		
-		
-		void ProxyEinstellenToolStripMenuItemClick(object sender, System.EventArgs e)
+				
+		private void ProxyEinstellenToolStripMenuItemClick(object sender, System.EventArgs e)
 		{
 			Options op = new Options(this._cs);
 			op.ShowDialog();

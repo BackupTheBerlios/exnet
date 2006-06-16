@@ -1,14 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Forms;
+
 using Gui;
 using Server;
-
-using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
-using System.Collections;
 
 namespace Start
 {
@@ -24,7 +18,7 @@ namespace Start
 			
 			#region Client - separated in later version			
 			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
+			Application.SetCompatibleTextRenderingDefault(true);
 			Application.Run(new Gui.Login());
 			#endregion
 		}	

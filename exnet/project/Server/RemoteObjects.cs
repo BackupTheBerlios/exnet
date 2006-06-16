@@ -24,7 +24,7 @@ namespace Server
 		private event ChangedDelegate Changed; 
 		private string _serverStoragePath = @"server\storage\";
 			
-		public IUser Login(IUser user)
+		public IUser UserLogin(IUser user)
 		{			
 		//	System.Threading.Thread.Sleep(2000);	
 			
@@ -99,9 +99,8 @@ namespace Server
 		}
 		#endregion
 		
-		#region files		
-		
-		public DBFile SaveFile(FileStream fs, string clientFileHash, IUser user)
+		#region files			
+		public DBFile SaveFile(IUser user, FileStream fs, string clientFileHash, DBDirectory dir)
 		{			
 		//if not allready done create neccessary dirs
 		CreatePath();
@@ -110,13 +109,29 @@ namespace Server
 				
 		//skip the file if its larger than 5 mbyte
 		if(fs.Length > 1024*1024*5){
-			dbf.FileStatus = FileStatus.FileTooBig;
+			dbf.Status = FileStatus.FileTooBig;
 			return dbf;}
 		
 		//check wether the file exists or not
 		if(File.Exists(_serverStoragePath+clientFileHash)){
-			dbf.FileStatus = FileStatus.FileAllreadyExists;
+			dbf.Status = FileStatus.FileAllreadyExists;
 			return dbf;}
+		
+		//check if directory exists or not
+		try{
+			DataTable dt = _db.Select("SELECT id FROM directories " +
+			                          "WHERE id = '"+dir.ID+"'");
+			
+			if(dt.Rows.Count < 1 && dir.ID != 0){
+				dbf.Status = FileStatus.DirectoryNotExists;
+				return dbf;
+			}
+			
+		}catch(Exception e){
+			Debug.WriteLine("Server: "+e.Message);
+			dbf.Status = FileStatus.DatabaseProblem;
+			return dbf;	
+		}
 		
 		//try to upload the file and write it locally		
 		try{
@@ -133,7 +148,7 @@ namespace Server
 			fs.Close();
 		}catch(Exception e){
 			Debug.WriteLine("Server: "+e.Message);
-			dbf.FileStatus = FileStatus.FileUploadFailed;
+			dbf.Status = FileStatus.FileUploadFailed;
 			return dbf;			
 		}		
 		
@@ -145,7 +160,7 @@ namespace Server
 			try{
 			File.Delete(_serverStoragePath+clientFileHash);
 			}catch{}
-			dbf.FileStatus = FileStatus.FileCRCFailed;
+			dbf.Status = FileStatus.FileCRCFailed;
 			return dbf;
 		}
 		
@@ -154,11 +169,11 @@ namespace Server
 			FileInfo fi = new FileInfo(fs.Name);	
 			FileInfo local = new FileInfo(_serverStoragePath+hash);
 			
-			_db.Insert("INSERT INTO files (md5,filename,user,size) " +
-				       "VALUES ('"+hash+"','"+fi.Name+"','"+user.ID+"','"+local.Length+"')");	
+			_db.Insert("INSERT INTO files (md5,filename,user,size,directory) " +
+				       "VALUES ('"+hash+"','"+fi.Name+"','"+user.ID+"','"+local.Length+"','"+dir.ID+"')");	
 			
-			dbf.FileStatus = FileStatus.FileUploaded;
-			dbf.FileName = fi.Name;
+			dbf.Status = FileStatus.FileUploaded;
+			dbf.Name = fi.Name;
 			dbf.User = user.ID;
 			
 			DataTable dt = _db.Select("SELECT id FROM files " +
@@ -172,7 +187,7 @@ namespace Server
 			return dbf;
 		}catch(Exception e){
 			Debug.WriteLine("Server: "+e.Message);
-			dbf.FileStatus = FileStatus.DatabaseProblem;
+			dbf.Status = FileStatus.DatabaseProblem;
 			return dbf;}				
 		}
 				
@@ -185,10 +200,10 @@ namespace Server
 				                          "WHERE id = '"+dbfile.ID+"'");	
 				
 				if(dt.Rows.Count <= 0){
-					dbfile.FileStatus = FileStatus.FileNotInDatabase;
+					dbfile.Status = FileStatus.FileNotInDatabase;
 					return dbfile;
 				}else if(dt.Rows.Count > 1){
-					dbfile.FileStatus = FileStatus.FileIDNotUnique;
+					dbfile.Status = FileStatus.FileIDNotUnique;
 					return dbfile;
 				}else if(dt.Rows.Count == 1){
 					
@@ -202,14 +217,14 @@ namespace Server
 				           		  "WHERE id = '"+dbfile.ID+"'";
 				
 					_db.Insert(temp);					
-					dbfile.FileStatus = FileStatus.FileSuccessfullyDeleted;
+					dbfile.Status = FileStatus.FileSuccessfullyDeleted;
 					return dbfile;
 				}				
 				
 			}catch(Exception e){
 				Debug.WriteLine("Server: "+e.Message);}
 			
-			dbfile.FileStatus = FileStatus.Undefined;
+			dbfile.Status = FileStatus.Undefined;
 			return dbfile;
 		}
 		
@@ -223,18 +238,28 @@ namespace Server
 			}
 		}
 		
-		public List<DBFile> GetFileInfos(IUser user)
+		public List<DBFile> GetFiles(IUser user, DBDirectory dir)
 		{
 			List<DBFile> list = new List<DBFile>();
 			
+			if(dir == null)
+				return list;
+			
 			try{
+				//just in case the dir is empty (easier for gui getting root)
+				int dirID = 0;
+				if(dir != null)
+					dirID = dir.ID;		
+				
 				DataTable dt = _db.Select("SELECT id,filename,user " +
-				                          "FROM files");
+				                          "FROM files " +
+				                          "WHERE directory = '"+dirID+"'");
+				
 				foreach(DataRow r in dt.Rows)
 				{
 					DBFile file = new DBFile();
 					file.ID = int.Parse(r.ItemArray[0].ToString());
-					file.FileName = r.ItemArray[1].ToString();					
+					file.Name = r.ItemArray[1].ToString();					
 					file.User = int.Parse(r.ItemArray[2].ToString());	
 					list.Add(file);
 				}
@@ -252,25 +277,143 @@ namespace Server
 			                          "WHERE id = '"+dbfile.ID+"'");
 			
 			if(dt.Rows.Count <= 0){
-				dbfile.FileStatus = FileStatus.FileNotInDatabase;
+				dbfile.Status = FileStatus.FileNotInDatabase;
 			}else if(dt.Rows.Count > 1){
-				dbfile.FileStatus = FileStatus.FileIDNotUnique;
+				dbfile.Status = FileStatus.FileIDNotUnique;
 			}else{
 			
 				string hash = dt.Rows[0].ItemArray[0].ToString();
 				if(!File.Exists(_serverStoragePath+hash)){
-					dbfile.FileStatus = FileStatus.FileNotInFilesystem;
-				}else{
-				
+					dbfile.Status = FileStatus.FileNotInFilesystem;
+				}else{				
 				FileStream fs = File.Open(_serverStoragePath+hash, FileMode.Open,FileAccess.Read,FileShare.Read);
-				dbfile.FileStream = fs;
+				dbfile.Stream = fs;
 				}				
 			}
 			}catch(Exception e){
 				Debug.WriteLine("Server: "+e.Message);}
 			return dbfile;
+		}		
+		#endregion
+		
+		#region items
+		
+		public List<DBItem> GetItems(IUser user, DBDirectory dir){
+			List<DBItem> items = new List<DBItem>();
+		
+			foreach(DBDirectory db in GetDirectoryInfos( user, dir ))
+				items.Add(db);
+			
+			foreach(DBFile df in GetFiles( user, dir ))
+				items.Add(df);	
+			
+			return items;
+		}
+		#endregion
+		
+		#region directories		
+		public List<DBDirectory> GetDirectoryInfos(IUser user, DBDirectory dir)
+		{			
+			List<DBDirectory> list = new List<DBDirectory>();			
+			
+			try{
+				//just in case the dir is empty (easier for gui getting root)
+				int dirID = 0;
+				if(dir != null)
+					dirID = dir.ID;				
+				
+				DataTable dt = _db.Select("SELECT id,name,subid " +
+				                          "FROM directories " +
+				                          "WHERE subid ='"+dirID+"'");				
+				
+				foreach(DataRow r in dt.Rows)
+				{
+					DBDirectory dirs = new DBDirectory(r.ItemArray[1].ToString(), DirectoryType.Normal);
+					dirs.ID = int.Parse(r.ItemArray[0].ToString());			
+					
+					int temp;
+					int.TryParse(r.ItemArray[2].ToString(),out temp);
+					dirs.Directory = temp;
+					list.Add(dirs);
+				}
+			}catch(Exception e){
+				Debug.WriteLine("Server: "+e.Message);				
+			}
+			return list;						
 		}
 		
+		public DBDirectory DeleteDirectory(IUser user, DBDirectory dir)
+		{	
+			Debug.WriteLine("Server: Try to delete. "+dir.ID);
+			try{
+				// not empty cause dirs
+				DataTable dt = _db.Select("SELECT id FROM directories " +
+				                          "WHERE subid = '"+dir.ID+"'");
+				if(dt.Rows.Count > 0){
+					dir.Status = DirectoryStatus.DirectoryNotEmpty;
+					return dir;}
+				
+				// not empty cause files
+				dt = _db.Select("SELECT id FROM files " +
+				                "WHERE directory = '"+dir.ID+"'");
+				if(dt.Rows.Count > 0){
+					dir.Status = DirectoryStatus.DirectoryNotEmpty;
+					return dir;}
+				
+				dt = _db.Select("SELECT id FROM directories " +
+				                          "WHERE id = '"+dir.ID+"'");	
+				
+				if(dt.Rows.Count <= 0){
+					dir.Status = DirectoryStatus.NotInDatabase;
+					return dir;
+				}else if(dt.Rows.Count > 1){
+					dir.Status = DirectoryStatus.IDNotUnique;
+					return dir;
+				}else if(dt.Rows.Count == 1){
+					
+					string temp = "DELETE FROM directories " +
+				           		  "WHERE id = '"+dir.ID+"'";
+				
+					_db.Insert(temp);	
+					dir.Status = DirectoryStatus.Deleted;
+					return dir;
+				}				
+				
+			}catch(Exception e){
+				Debug.WriteLine("Server: "+e.Message);}
+			
+			dir.Status = DirectoryStatus.Undefined;
+			return dir;
+		}
+		
+		public DBDirectory CreateDirectory(IUser user, DBDirectory dir)
+		{
+			Debug.WriteLine("Server: Try to create. "+dir.Name);
+			try{
+				
+				DataTable dt = _db.Select("SELECT id FROM directories " +
+				                          "WHERE name = '"+dir.Name+"'");	
+				
+				if(dt.Rows.Count >= 1){
+					dir.Status = DirectoryStatus.AllreadyExists;
+					return dir;
+				}else{
+					
+					string temp = "INSERT INTO directories " +
+				           		  "(name,subid) VALUES " +
+								  "('"+dir.Name+"','"+dir.Directory+"')";
+				
+					_db.Insert(temp);	
+					dir.Status = DirectoryStatus.Created;
+					return dir;
+				}				
+				
+			}catch(Exception e){
+				Debug.WriteLine("Server: "+e.Message);}
+			
+			dir.Status = DirectoryStatus.Undefined;
+			return dir;			
+		}
 		#endregion
 		
 		#region messages
@@ -349,7 +492,7 @@ namespace Server
 			foreach(DataRow dr in dt.Rows)
 			{
 				DBFile dbfile = new DBFile();
-				dbfile.FileName = dr.ItemArray[0].ToString();
+				dbfile.Name = dr.ItemArray[0].ToString();
 				dbfile.MD5 = dr.ItemArray[1].ToString();
 				fs.Search(dbfile, searchString);				
 			}
@@ -466,8 +609,6 @@ namespace Server
 			}catch{}
 		}		
 		#endregion
-		
-		
 		
 	}
 }

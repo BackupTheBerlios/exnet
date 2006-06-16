@@ -12,13 +12,12 @@ namespace Interfaces
 		/*
 		Special Events
 		not sure what they do .. forgot :)
-		*/
-		
+		*/		
 		void AddEvent(EventWrapper ew);
 		//event ChangedDelegate Changed;
 		
 		#region user
-		IUser Login (IUser user);
+		IUser UserLogin (IUser user);
 		#endregion
 		
 		#region search
@@ -38,11 +37,20 @@ namespace Interfaces
 		#endregion
 		
 		#region file
-		DBFile SaveFile(FileStream fs, string clientFileHash, IUser user);
+		DBFile SaveFile(IUser user, FileStream fs, string clientFileHash, DBDirectory dir);
 		DBFile DeleteFile(IUser user, DBFile dbfile);
 		DBFile GetFile(IUser user, DBFile dbfile);
-		List<DBFile> GetFileInfos(IUser user);		
+		List<DBFile> GetFiles(IUser user, DBDirectory dir);		
 		#endregion
 		
+		#region items
+		List<DBItem> GetItems(IUser user, DBDirectory dir);	
+		#endregion
+		
+		#region directory
+		List<DBDirectory> GetDirectoryInfos(IUser user, DBDirectory dir);		
+		DBDirectory DeleteDirectory(IUser user, DBDirectory dir);		
+		DBDirectory CreateDirectory(IUser user, DBDirectory dir);				
+		#endregion		
 	}	
 }

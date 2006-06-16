@@ -37,6 +37,7 @@ namespace Gui
 		private void InitializeComponent()
 		{
 			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Login));
 			this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
 			this.testToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.testToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -54,10 +55,6 @@ namespace Gui
 			this.beendenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.bearbeitenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.proxyEinstellenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-			this.languageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.deutschToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.englischToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-			this.türkischToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.hilfeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.webseiteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.überToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -115,7 +112,7 @@ namespace Gui
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.textBox1.Location = new System.Drawing.Point(90, 42);
 			this.textBox1.Name = "textBox1";
-			this.textBox1.Size = new System.Drawing.Size(170, 21);
+			this.textBox1.Size = new System.Drawing.Size(168, 21);
 			this.textBox1.TabIndex = 4;
 			this.textBox1.Text = "peter";
 			// 
@@ -125,7 +122,7 @@ namespace Gui
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.textBox2.Location = new System.Drawing.Point(90, 71);
 			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(170, 21);
+			this.textBox2.Size = new System.Drawing.Size(168, 21);
 			this.textBox2.TabIndex = 5;
 			this.textBox2.Text = "peter";
 			this.textBox2.UseSystemPasswordChar = true;
@@ -135,13 +132,12 @@ namespace Gui
 			this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 									this.dateiToolStripMenuItem,
 									this.bearbeitenToolStripMenuItem,
-									this.languageToolStripMenuItem1,
 									this.hilfeToolStripMenuItem,
 									this.testing1});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
 			this.menuStrip1.RightToLeft = System.Windows.Forms.RightToLeft.No;
-			this.menuStrip1.Size = new System.Drawing.Size(272, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(270, 24);
 			this.menuStrip1.TabIndex = 9;
 			this.menuStrip1.Text = "menuStrip1";
 			this.menuStrip1.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.MenuStrip1ItemClicked);
@@ -204,37 +200,9 @@ namespace Gui
 			// proxyEinstellenToolStripMenuItem
 			// 
 			this.proxyEinstellenToolStripMenuItem.Name = "proxyEinstellenToolStripMenuItem";
-			this.proxyEinstellenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.proxyEinstellenToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
 			this.proxyEinstellenToolStripMenuItem.Text = "Optionen";
 			this.proxyEinstellenToolStripMenuItem.Click += new System.EventHandler(this.ProxyEinstellenToolStripMenuItemClick);
-			// 
-			// languageToolStripMenuItem1
-			// 
-			this.languageToolStripMenuItem1.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-									this.deutschToolStripMenuItem1,
-									this.englischToolStripMenuItem1,
-									this.türkischToolStripMenuItem});
-			this.languageToolStripMenuItem1.Name = "languageToolStripMenuItem1";
-			this.languageToolStripMenuItem1.Size = new System.Drawing.Size(66, 20);
-			this.languageToolStripMenuItem1.Text = "Language";
-			// 
-			// deutschToolStripMenuItem1
-			// 
-			this.deutschToolStripMenuItem1.Name = "deutschToolStripMenuItem1";
-			this.deutschToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-			this.deutschToolStripMenuItem1.Text = "Deutsch";
-			// 
-			// englischToolStripMenuItem1
-			// 
-			this.englischToolStripMenuItem1.Name = "englischToolStripMenuItem1";
-			this.englischToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
-			this.englischToolStripMenuItem1.Text = "Englisch";
-			// 
-			// türkischToolStripMenuItem
-			// 
-			this.türkischToolStripMenuItem.Name = "türkischToolStripMenuItem";
-			this.türkischToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-			this.türkischToolStripMenuItem.Text = "Türkisch";
 			// 
 			// hilfeToolStripMenuItem
 			// 
@@ -248,13 +216,13 @@ namespace Gui
 			// webseiteToolStripMenuItem
 			// 
 			this.webseiteToolStripMenuItem.Name = "webseiteToolStripMenuItem";
-			this.webseiteToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.webseiteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.webseiteToolStripMenuItem.Text = "Webseite";
 			// 
 			// überToolStripMenuItem
 			// 
 			this.überToolStripMenuItem.Name = "überToolStripMenuItem";
-			this.überToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+			this.überToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.überToolStripMenuItem.Text = "Über";
 			// 
 			// testing1
@@ -268,9 +236,9 @@ namespace Gui
 			// 
 			this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
 									this.toolStripStatusLabel1});
-			this.statusStrip1.Location = new System.Drawing.Point(0, 169);
+			this.statusStrip1.Location = new System.Drawing.Point(0, 167);
 			this.statusStrip1.Name = "statusStrip1";
-			this.statusStrip1.Size = new System.Drawing.Size(272, 22);
+			this.statusStrip1.Size = new System.Drawing.Size(270, 22);
 			this.statusStrip1.TabIndex = 10;
 			this.statusStrip1.Text = "statusStrip1";
 			// 
@@ -283,7 +251,7 @@ namespace Gui
 			// button1
 			// 
 			this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.button1.Location = new System.Drawing.Point(170, 128);
+			this.button1.Location = new System.Drawing.Point(168, 128);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(90, 24);
 			this.button1.TabIndex = 1;
@@ -302,7 +270,7 @@ namespace Gui
 									| System.Windows.Forms.AnchorStyles.Right)));
 			this.checkBox1.Location = new System.Drawing.Point(91, 99);
 			this.checkBox1.Name = "checkBox1";
-			this.checkBox1.Size = new System.Drawing.Size(169, 23);
+			this.checkBox1.Size = new System.Drawing.Size(167, 23);
 			this.checkBox1.TabIndex = 14;
 			this.checkBox1.Text = "Automatischer Login";
 			this.checkBox1.UseVisualStyleBackColor = true;
@@ -320,7 +288,7 @@ namespace Gui
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(272, 191);
+			this.ClientSize = new System.Drawing.Size(270, 189);
 			this.Controls.Add(this.checkBox1);
 			this.Controls.Add(this.statusStrip1);
 			this.Controls.Add(this.label1);
@@ -329,6 +297,7 @@ namespace Gui
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.menuStrip1);
 			this.Controls.Add(this.button1);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.MainMenuStrip = this.menuStrip1;
 			this.Name = "Login";
 			this.Text = "Expert Finding";
@@ -346,10 +315,6 @@ namespace Gui
 		private Gui.AnimatedIcon animatedIcon1;
 		private System.Windows.Forms.ToolStripMenuItem überToolStripMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem webseiteToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem türkischToolStripMenuItem;
-		private System.Windows.Forms.ToolStripMenuItem englischToolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem deutschToolStripMenuItem1;
-		private System.Windows.Forms.ToolStripMenuItem languageToolStripMenuItem1;
 		private System.Windows.Forms.ToolStripMenuItem proxyEinstellenToolStripMenuItem;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
 		private System.Windows.Forms.ToolStripMenuItem profilImportierenToolStripMenuItem;

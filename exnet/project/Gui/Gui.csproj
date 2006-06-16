@@ -39,62 +39,6 @@
     <EmbeddedResource Include="Login.resx">
       <DependentUpon>Login.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Main.cs" />
-    <Compile Include="Main.Designer.cs">
-      <DependentUpon>Main.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="Main.resx">
-      <DependentUpon>Main.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="MenuPanel.cs" />
-    <Compile Include="MenuPanel.Designer.cs">
-      <DependentUpon>MenuPanel.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="MenuPanel.resx">
-      <DependentUpon>MenuPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="UserControlAdministration.cs" />
-    <Compile Include="UserControlAdministration.Designer.cs">
-      <DependentUpon>UserControlAdministration.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="UserControlAdministration.resx">
-      <DependentUpon>UserControlAdministration.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="UserControlContainer.cs" />
-    <Compile Include="UserControlContainer.Designer.cs">
-      <DependentUpon>UserControlContainer.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="UserControlContainer.resx">
-      <DependentUpon>UserControlContainer.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="UserControlDiscussion.cs" />
-    <Compile Include="UserControlDiscussion.Designer.cs">
-      <DependentUpon>UserControlDiscussion.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="UserControlDiscussion.resx">
-      <DependentUpon>UserControlDiscussion.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="UserControlMessages.cs" />
-    <Compile Include="UserControlMessages.Designer.cs">
-      <DependentUpon>UserControlMessages.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="UserControlMessages.resx">
-      <DependentUpon>UserControlMessages.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="UserControlProfile.cs" />
-    <Compile Include="UserControlProfile.Designer.cs">
-      <DependentUpon>UserControlProfile.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="UserControlProfile.resx">
-      <DependentUpon>UserControlProfile.cs</DependentUpon>
-    </EmbeddedResource>
-    <Compile Include="UserControlSearch.cs" />
-    <Compile Include="UserControlSearch.Designer.cs">
-      <DependentUpon>UserControlSearch.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="UserControlSearch.resx">
-      <DependentUpon>UserControlSearch.Designer.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="AnimatedIcon.Designer.cs">
       <DependentUpon>AnimatedIcon.cs</DependentUpon>
     </Compile>
@@ -109,13 +53,6 @@
     <EmbeddedResource Include="NewForm.resx">
       <DependentUpon>NewForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="UserControlSearchItem.Designer.cs">
-      <DependentUpon>UserControlSearchItem.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UserControlSearchItem.cs" />
-    <EmbeddedResource Include="UserControlSearchItem.resx">
-      <DependentUpon>UserControlSearchItem.cs</DependentUpon>
-    </EmbeddedResource>
     <Compile Include="Testing.cs" />
     <Compile Include="Options.Designer.cs">
       <DependentUpon>Options.cs</DependentUpon>
@@ -124,6 +61,17 @@
     <EmbeddedResource Include="Options.resx">
       <DependentUpon>Options.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="temp.cs" />
+    <Compile Include="Browser\DataBrowser.cs" />
+    <Compile Include="Browser\DataBrowser.Designer.cs">
+      <DependentUpon>DataBrowser.cs</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Browser\DataBrowser.resx">
+      <DependentUpon>DataBrowser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Browser\IconEx.resx" />
+    <Compile Include="Browser\IconEx.cs" />
+    <Compile Include="Browser\MultiIcon.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Client\Client.csproj">
@@ -138,6 +86,7 @@
       <Project>{6D7A396D-DA7D-4814-ABA6-263280E2F447}</Project>
       <Name>Interfaces</Name>
     </ProjectReference>
+    <Folder Include="Browser" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

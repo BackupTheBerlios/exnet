@@ -17,10 +17,11 @@ namespace Client
 	{
 		#region variables
 		public event UpdatesDelegate UpdatesAvailable;
+		public User _user;
 		private string _clientStoragePath = @"client\storage\";
-		TcpChannel _chan = new TcpChannel();
-		IServer _ro;	
-		public delegate void UserLoginDelegate(IUser user);
+		private TcpChannel _chan = new TcpChannel();
+		private IServer _ro;	
+	
 		public delegate void UserSearchDelegate(List<SearchItem> hits);
 		public delegate void UserMessagesDelegate(List<Message> messages);
 		public delegate void UserInterestsDelegate(List<Interest> interests);
@@ -84,17 +85,7 @@ namespace Client
 			if(UpdatesAvailable != null)
 				UpdatesAvailable();
 		}
-		
-		public void Super(IAsyncResult ar)
-		{
-			LongRuningProcess d = (LongRuningProcess)((AsyncResult)ar).AsyncDelegate;
-			
-			if(UserLogin != null)
-			{
-				UserLogin(d.EndInvoke(ar));
-			}
-		}
-		
+	
 		public void SuperSearch(IAsyncResult ar)
 		{
 			LongRuningSearch d = (LongRuningSearch)((AsyncResult)ar).AsyncDelegate;
@@ -195,12 +186,7 @@ namespace Client
 			IAsyncResult ar = longProcess.BeginInvoke(i, user, call, null);
 		}
 		
-		public void Login(User user)
-		{
-			AsyncCallback call = new AsyncCallback( Super );
-			LongRuningProcess longProcess = new LongRuningProcess(_ro.Login);
-			IAsyncResult ar = longProcess.BeginInvoke(user, call, null);			
-		}
+
 		
 		public void GetMessages(User user)
 		{
@@ -243,7 +229,7 @@ namespace Client
 		 Calling backs
 		 */
 		
-		public delegate IUser LongRuningProcess(IUser user);
+		
 		public delegate List<SearchItem> LongRuningSearch(string searchString, IUser user);
 		public delegate List<Message> LongRuningGetMessages(IUser user);
 		public delegate List<Interest> LongRuningGetInterests(IUser user);
@@ -252,7 +238,7 @@ namespace Client
 		public delegate void LongRuningDeleteInterests(List <Interest> interests, IUser user);
 		public delegate void LongRuningDeleteMessages(List <Message> messages, IUser user);		
 		
-		public event UserLoginDelegate UserLogin;
+		
 		public event UserSearchDelegate UserSearch;
 		public event UserMessagesDelegate UserMessages;
 		public event UserWriteMessageDelegate UserWriteMessage;
@@ -263,6 +249,35 @@ namespace Client
 		#endregion
 	
 	#region Server Connection	
+		#region user
+			#region login			
+			
+			public delegate IUser LongRuningProcess(User user);
+			
+			public delegate void UserLoginDelegate(User user);
+			public event UserLoginDelegate UserLogin;
+			
+			public void Login(User user)
+			{
+			AsyncCallback call = new AsyncCallback( Super );
+			LongRuningProcess longProcess = new LongRuningProcess(_ro.UserLogin);
+			IAsyncResult ar = longProcess.BeginInvoke(user, call, null);			
+			}
+			
+			public void Super(IAsyncResult ar)
+			{
+				LongRuningProcess d = (LongRuningProcess)((AsyncResult)ar).AsyncDelegate;
+				
+				_user = (User)d.EndInvoke(ar);
+				
+				if(UserLogin != null)
+				{
+					UserLogin(_user);
+				}
+			}
+			#endregion
+		#endregion
+		
 		#region items
 			#region getitems
 			private delegate List<DBItem> GettingDBItems(IUser user, DBDirectory dir);
@@ -270,11 +285,11 @@ namespace Client
 			public delegate void GotDBItemsDelegate(List<DBItem> dbitems);
 			public event GotDBItemsDelegate GotDBItems;
 			
-			public void GetDBItems(IUser user,DBDirectory dir)
+			public void GetDBItems(DBDirectory dir)
 			{
 				AsyncCallback call = new AsyncCallback( ServerGotDBItems );			
 				GettingDBItems process = _ro.GetItems;
-				IAsyncResult ar = process.BeginInvoke(user, dir, call, null);			
+				IAsyncResult ar = process.BeginInvoke(_user, dir, call, null);			
 			}
 			
 			private void ServerGotDBItems(IAsyncResult ar)
@@ -284,8 +299,7 @@ namespace Client
 				if(GotDBItems != null)
 					GotDBItems(d.EndInvoke(ar));
 			}
-			#endregion
-			
+			#endregion	
 		#endregion
 	
 		#region files
@@ -393,9 +407,7 @@ namespace Client
 			}
 			#endregion
 		#endregion
-		
-		
-		
+	
 		#region directory
 			#region getdirectories
 			private delegate List<DBDirectory> GettingDBDirectories(IUser user, DBDirectory dir);
@@ -439,8 +451,7 @@ namespace Client
 		#endregion
 	#endregion
 	}
-	
-	
+		
 	public class Server
 	{
 		public string Name;
