@@ -69,7 +69,9 @@
     <EmbeddedResource Include="Browser\DataBrowser.resx">
       <DependentUpon>DataBrowser.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Browser\IconEx.resx" />
+    <EmbeddedResource Include="Browser\IconEx.resx">
+    	<DependentUpon>IconEx.cs</DependentUpon>
+    </EmbeddedResource>
     <Compile Include="Browser\IconEx.cs" />
     <Compile Include="Browser\MultiIcon.cs" />
   </ItemGroup>

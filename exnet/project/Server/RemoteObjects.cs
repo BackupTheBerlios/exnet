@@ -228,6 +228,54 @@ namespace Server
 			return dbfile;
 		}
 		
+		public DBFile RenameFile(IUser user, DBFile file, string newName){
+			
+			if(newName == null || newName.Length == 0){
+				file.Status = FileStatus.FileNameEmpty;
+				return file;}
+			
+			if(file.Name == newName){
+				return file;}
+			
+			try{
+				
+				DataTable dt = _db.Select("SELECT id,filename,user " +
+				                          "FROM files " +
+				                          "WHERE directory = '"+file.Directory+"' " +
+				                          "AND filename = '"+newName+"'");
+				
+				if(dt.Rows.Count > 1){
+					file.Status = FileStatus.FileNameAllreadyGiven;
+					return file;
+				}
+				
+				dt = _db.Select("SELECT id,filename,user " +
+				                "FROM files " +
+				                "WHERE id = '"+file.ID+"'");
+				
+				if(dt.Rows.Count <= 0){
+					file.Status	= FileStatus.FileNotInDatabase;
+					return file;
+				}else if(dt.Rows.Count > 1){
+					file.Status = FileStatus.FileIDNotUnique;
+					return file;
+				}else{
+					_db.Insert("UPDATE files SET filename = '"+newName+"' " + 
+						       "WHERE id ='"+file.ID+"'");
+					
+					file.Name = newName;
+					file.Status = FileStatus.FileSuccessfullyRenamed;
+					return file;
+				}
+				
+				
+			}catch(Exception e){
+				Debug.WriteLine("Server: "+e.Message);
+				file.Status = FileStatus.Undefined;
+				return file;
+			}
+		}
+		
 		private void CreatePath()
 		{
 			try{
@@ -296,8 +344,7 @@ namespace Server
 		}		
 		#endregion
 		
-		#region items
-		
+		#region items		
 		public List<DBItem> GetItems(IUser user, DBDirectory dir){
 			List<DBItem> items = new List<DBItem>();
 		
@@ -309,9 +356,22 @@ namespace Server
 			
 			return items;
 		}
+		
+		public DBItem RenameItem(IUser user, DBItem item, string newName){
+			if(item is DBFile)
+				return RenameFile(user,item as DBFile, newName);
+			else if(item is DBDirectory){
+				return RenameDirectory(user,item as DBDirectory, newName);
+			}
+			return item;
+		}
 		#endregion
 		
 		#region directories		
+		public DBDirectory RenameDirectory(IUser user, DBDirectory dir, string newName){
+			return dir;
+		}
+		
 		public List<DBDirectory> GetDirectoryInfos(IUser user, DBDirectory dir)
 		{			
 			List<DBDirectory> list = new List<DBDirectory>();			
@@ -387,26 +447,44 @@ namespace Server
 		}
 		
 		public DBDirectory CreateDirectory(IUser user, DBDirectory dir)
-		{
+		{						
+			if(dir == null)
+				return dir;				
+			
 			Debug.WriteLine("Server: Try to create. "+dir.Name);
+			
 			try{
+				DataTable dt = _db.Select("SELECT name FROM directories " +
+				                          "WHERE subid = '"+dir.Directory+"' AND " +
+				                          "name LIKE '"+dir.Name+"'");				
 				
-				DataTable dt = _db.Select("SELECT id FROM directories " +
-				                          "WHERE name = '"+dir.Name+"'");	
-				
-				if(dt.Rows.Count >= 1){
-					dir.Status = DirectoryStatus.AllreadyExists;
-					return dir;
-				}else{
+				foreach(DataRow dr in dt.Rows)
+				{
+					if(dr.ItemArray[0].ToString() == dir.Name)
+					{
+						Regex re = new Regex(@"\d+$");
+						Match m = re.Match(dir.Name);
+						
+						if(m.Success){						
+						int temv = 0;
+						int.TryParse(m.Value,out temv);	
+						temv++;
+						dir.Name = Regex.Replace(dir.Name,@"\d+$",temv.ToString());						
+											
+						}else{
+						dir.Name = dir.Name + "1";		
+						}
+						return CreateDirectory(user, dir);
+					}
+				}
 					
-					string temp = "INSERT INTO directories " +
-				           		  "(name,subid) VALUES " +
-								  "('"+dir.Name+"','"+dir.Directory+"')";
-				
-					_db.Insert(temp);	
-					dir.Status = DirectoryStatus.Created;
-					return dir;
-				}				
+				string temp = "INSERT INTO directories " +
+			           		  "(name,subid) VALUES " +
+							  "('"+dir.Name+"','"+dir.Directory+"')";
+			
+				_db.Insert(temp);	
+				dir.Status = DirectoryStatus.Created;
+				return dir;			
 				
 			}catch(Exception e){
 				Debug.WriteLine("Server: "+e.Message);}

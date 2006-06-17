@@ -40,17 +40,20 @@ namespace Interfaces
 		DBFile SaveFile(IUser user, FileStream fs, string clientFileHash, DBDirectory dir);
 		DBFile DeleteFile(IUser user, DBFile dbfile);
 		DBFile GetFile(IUser user, DBFile dbfile);
+		DBFile RenameFile(IUser user, DBFile file, string newName);
 		List<DBFile> GetFiles(IUser user, DBDirectory dir);		
 		#endregion
 		
 		#region items
-		List<DBItem> GetItems(IUser user, DBDirectory dir);	
+		List<DBItem> GetItems(IUser user, DBDirectory dir);		
+		DBItem RenameItem(IUser user, DBItem item, string newName);
 		#endregion
 		
 		#region directory
 		List<DBDirectory> GetDirectoryInfos(IUser user, DBDirectory dir);		
 		DBDirectory DeleteDirectory(IUser user, DBDirectory dir);		
 		DBDirectory CreateDirectory(IUser user, DBDirectory dir);				
+		DBDirectory RenameDirectory(IUser user, DBDirectory dir, string newName);
 		#endregion		
 	}	
 }

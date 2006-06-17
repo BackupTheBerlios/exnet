@@ -21,6 +21,16 @@ namespace Client
 		private string _clientStoragePath = @"client\storage\";
 		private TcpChannel _chan = new TcpChannel();
 		private IServer _ro;	
+		
+		public string ClientStoragePath{
+			get{
+				return _clientStoragePath;
+			}
+			
+			set{
+				_clientStoragePath = value;
+			}
+		}
 	
 		public delegate void UserSearchDelegate(List<SearchItem> hits);
 		public delegate void UserMessagesDelegate(List<Message> messages);
@@ -300,6 +310,29 @@ namespace Client
 					GotDBItems(d.EndInvoke(ar));
 			}
 			#endregion	
+			
+			#region rename item
+			private delegate DBItem RenamingDBItem(IUser user, DBItem item, string newName);
+			
+			public delegate void RenamedDBItemDelegate(DBItem item);
+			public event RenamedDBItemDelegate RenamedDBItem;
+			
+			public void RenameDBItem(DBItem item, string newName)
+			{
+				AsyncCallback call = new AsyncCallback( ServerRenamedDBItem );								
+				RenamingDBItem process = _ro.RenameItem;
+				IAsyncResult ar = process.BeginInvoke(_user, item, newName, call, null);			
+			}
+			
+			private void ServerRenamedDBItem(IAsyncResult ar)
+			{
+				RenamingDBItem d = (RenamingDBItem)((AsyncResult)ar).AsyncDelegate;			
+				
+				if(RenamedDBItem != null)
+					RenamedDBItem(d.EndInvoke(ar));
+			}
+			#endregion	
+			
 		#endregion
 	
 		#region files
@@ -312,11 +345,11 @@ namespace Client
 			public event GotFileDelegate GotFile;
 			
 			//gui starts getting the filestream -> async 
-			public void GetFile(IUser user, DBFile dbfile)
+			public void GetFile(DBFile dbfile)
 			{
 				AsyncCallback call = new AsyncCallback( ServerGotFile );			
 				GettingFile process = _ro.GetFile;
-				IAsyncResult ar = process.BeginInvoke(user, dbfile, call, null);			
+				IAsyncResult ar = process.BeginInvoke(_user, dbfile, call, null);			
 			}
 			
 			//asynccallback after finishing the long running progress
@@ -430,6 +463,28 @@ namespace Client
 			#endregion
 		
 			#region create directory
+			private delegate DBDirectory CreatingDBDirectory(IUser user, DBDirectory dir);
+			public delegate void CreatedDBDirectoryDelegate(DBDirectory dir);
+			public event CreatedDBDirectoryDelegate CreatedDBDirectory;
+			
+			public void CreateDBDirectory(DBDirectory dir)
+			{
+				AsyncCallback call = new AsyncCallback( ServerCreatedDBDirectory );			
+				CreatingDBDirectory process = _ro.CreateDirectory;
+				IAsyncResult ar = process.BeginInvoke(_user, dir, call, null);			
+			}
+			
+			private void ServerCreatedDBDirectory(IAsyncResult ar)
+			{
+				CreatingDBDirectory d = (CreatingDBDirectory)((AsyncResult)ar).AsyncDelegate;			
+				if(CreatedDBDirectory != null)
+					CreatedDBDirectory(d.EndInvoke(ar));	
+				
+				GetDBItems(d.EndInvoke(ar));				
+			}			
+			#endregion
+			
+			#region delete directory
 			private delegate DBDirectory DeletingDBDirectory(IUser user, DBDirectory dir);
 			public delegate void DeletedDBDirectoryDelegate(DBDirectory dir);
 			public event DeletedDBDirectoryDelegate DeletedDBDirectory;
